@@ -57,21 +57,50 @@
         clearSupportWalls();
     }, 200);
 
-    // 3. Samsung TV Remote Interface Navigation Key Handler
+    // 3. Samsung TV Remote Interface Navigation Key Handler (Tab-Conversion Engine)
     window.addEventListener('keydown', function(e) {
-        const scrollDistance = 180; 
+        // Create a fake keyboard event that acts exactly like pressing 'Tab'
+        const fakeTabEvent = new KeyboardEvent('keydown', {
+            key: 'Tab',
+            keyCode: 9,
+            code: 'Tab',
+            which: 9,
+            bubbles: true,
+            cancelable: true
+        });
+
+        // Create a fake keyboard event that acts like pressing 'Shift + Tab' (Go Backward)
+        const fakeShiftTabEvent = new KeyboardEvent('keydown', {
+            key: 'Tab',
+            keyCode: 9,
+            code: 'Tab',
+            which: 9,
+            shiftKey: true,
+            bubbles: true,
+            cancelable: true
+        });
+
         switch(e.keyCode) {
-            case 38: // Remote D-Pad Up
-                window.scrollBy(0, -scrollDistance);
+            case 39: // Remote Right Arrow -> Move to next item (Tab)
+                e.preventDefault();
+                document.activeElement.dispatchEvent(fakeTabEvent);
                 break;
-            case 40: // Remote D-Pad Down
-                window.scrollBy(0, scrollDistance);
+            case 40: // Remote Down Arrow -> Also moves forward down the grid rows (Tab)
+                e.preventDefault();
+                document.activeElement.dispatchEvent(fakeTabEvent);
                 break;
-            case 37: // Remote D-Pad Left (Go Back a page)
+            case 38: // Remote Up Arrow -> Move to previous item (Shift + Tab)
+                e.preventDefault();
+                document.activeElement.dispatchEvent(fakeShiftTabEvent);
+                break;
+            case 37: // Remote Left Arrow -> Standard navigation page back
                 window.history.back();
+                break;
+            case 13: // Remote Center Click -> Enter/Select the highlighted element
+                // The TV engine naturally triggers selections on focused elements
                 break;
         }
     });
 
-    console.log("TizenBrew Filter Engine Active.");
+    console.log("TizenBrew Unified App Interface Engine Active.");
 })();
